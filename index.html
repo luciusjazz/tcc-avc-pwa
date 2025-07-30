@@ -150,13 +150,9 @@
         armPhotoInput.addEventListener('change', () => handleImageFile(armPhotoInput, armImagePreview, 'arm'));
 
         async function runAnalysis(prompt, faceImg, armImg) {
-            // ATUALIZAÇÃO: Cole sua chave de API aqui!
-            const apiKey = "AIzaSyB4_VGjybI5EOKJHBNShKeGBDMeT295KP0";
+            // ATUALIZAÇÃO: Sua chave de API foi inserida aqui.
+            const apiKey = "AIzaSyCXuddFIes_GqcWCBoxh3RnrQib1Y2bwGc";
             
-            if (apiKey === "COLE_SUA_CHAVE_DE_API_AQUI") {
-                return `<p class="font-semibold text-red-600">Erro de Configuração:</p><p>A Chave de API (API Key) ainda não foi adicionada ao código. Por favor, siga o tutorial para gerar e inserir sua chave.</p>`;
-            }
-
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
             const parts = [{ text: prompt }];
             if (faceImg) parts.push({ inlineData: { mimeType: "image/jpeg", data: faceImg } });
