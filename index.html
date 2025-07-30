@@ -116,7 +116,6 @@
         let base64FaceImageData = null;
         let base64ArmImageData = null;
 
-        // Função para redimensionar a imagem antes de enviar
         function handleImageFile(fileInput, previewElement, imageDataTarget) {
             const file = fileInput.files[0];
             if (!file) return;
@@ -183,10 +182,12 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
+                // ATUALIZAÇÃO: Captura e lança um erro mais detalhado
                 if (!response.ok) {
                     const errorJson = await response.json();
-                    console.error("Detalhes do erro da API:", JSON.stringify(errorJson, null, 2));
-                    throw new Error(`Erro na API: ${response.status} ${response.statusText}`);
+                    const errorDetails = JSON.stringify(errorJson, null, 2);
+                    console.error("Detalhes do erro da API:", errorDetails);
+                    throw new Error(`Erro na API: ${response.status} ${response.statusText}. <br><br>Detalhes: <pre class="whitespace-pre-wrap text-xs">${errorDetails}</pre>`);
                 }
                 const result = await response.json();
                 if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
@@ -199,8 +200,13 @@
                     return "Não foi possível obter uma análise da IA (resposta com estrutura inesperada).";
                 }
             } catch (error) {
+                // ATUALIZAÇÃO: Mostra o erro detalhado na tela
                 console.error("Erro ao chamar a API do Gemini:", error);
-                return "Ocorreu um erro ao processar a análise. Verifique sua conexão com a internet e tente novamente.";
+                const detailedError = `
+                    <p class="font-semibold">Ocorreu um erro ao processar a análise.</p>
+                    <p class="mt-4 text-sm text-gray-500"><strong>Detalhes técnicos (para depuração):</strong><br>${error.message}</p>
+                `;
+                return detailedError;
             }
         }
 
