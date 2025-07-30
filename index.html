@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AVC Check - Rastreio Rápido</title>
     
-    <!-- PWA Manifest e Metadados -->
     <meta name="theme-color" content="#2563eb">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://placehold.co/192x192/2563eb/ffffff?text=AVC">
@@ -25,7 +24,6 @@
 <body class="bg-gray-50 text-gray-800">
 
     <div class="container mx-auto p-4 md:p-8 max-w-4xl">
-        <!-- O corpo do HTML continua o mesmo... -->
         <header class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold text-blue-600">AVC Check</h1>
             <p class="text-lg text-gray-600 mt-2">Uma ferramenta de apoio para identificação rápida de sinais de AVC.</p>
@@ -83,9 +81,10 @@
     </div>
 
     <script>
+        // CORREÇÃO: Registra o Service Worker com um nome de arquivo diferente para forçar a atualização
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').catch(err => console.error('SW registration failed:', err));
+                navigator.serviceWorker.register('sw_v2.js').catch(err => console.error('SW registration failed:', err));
             });
         }
         
@@ -150,7 +149,7 @@
         armPhotoInput.addEventListener('change', () => handleImageFile(armPhotoInput, armImagePreview, 'arm'));
 
         async function runAnalysis(prompt, faceImg, armImg) {
-            // ATUALIZAÇÃO: Sua chave de API foi inserida aqui.
+            // CORREÇÃO: Sua nova chave de API foi inserida aqui.
             const apiKey = "AIzaSyCXuddFIes_GqcWCBoxh3RnrQib1Y2bwGc";
             
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
