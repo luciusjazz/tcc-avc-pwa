@@ -45,7 +45,6 @@
                 <h2 class="text-2xl font-bold text-blue-500 mb-4">S - Sorriso</h2>
                 <p class="mb-4">Peça para a pessoa sorrir.</p>
                 <p class="mb-4 font-semibold">Tire uma foto do rosto ou escolha da galeria:</p>
-                <!-- ATUALIZAÇÃO: Atributo 'capture' removido -->
                 <input type="file" id="face-photo" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
                 <img id="image-preview" src="" alt="Pré-visualização da imagem do rosto" class="mt-4 rounded-lg max-h-60 hidden"/>
             </div>
@@ -55,7 +54,6 @@
                 <h2 class="text-2xl font-bold text-blue-500 mb-4">A - Abraço</h2>
                 <p class="mb-4">Peça para a pessoa levantar os dois braços para a frente.</p>
                 <p class="mb-4 font-semibold">Tire uma foto dos braços ou escolha da galeria:</p>
-                <!-- ATUALIZAÇÃO: Atributo 'capture' removido -->
                 <input type="file" id="arm-photo" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
                 <img id="arm-image-preview" src="" alt="Pré-visualização da imagem dos braços" class="mt-4 rounded-lg max-h-60 hidden"/>
             </div>
@@ -118,22 +116,57 @@
         let base64FaceImageData = null;
         let base64ArmImageData = null;
 
+        // Função para redimensionar a imagem antes de enviar
         function handleImageFile(fileInput, previewElement, imageDataTarget) {
-             const file = fileInput.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    previewElement.src = e.target.result;
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const MAX_WIDTH = 800;
+                    const MAX_HEIGHT = 800;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+
+                    previewElement.src = resizedDataUrl;
                     previewElement.classList.remove('hidden');
+
+                    const base64ResizedData = resizedDataUrl.split(',')[1];
+
                     if (imageDataTarget === 'face') {
-                        base64FaceImageData = e.target.result.split(',')[1];
+                        base64FaceImageData = base64ResizedData;
                     } else if (imageDataTarget === 'arm') {
-                        base64ArmImageData = e.target.result.split(',')[1];
+                        base64ArmImageData = base64ResizedData;
                     }
                 };
-                reader.readAsDataURL(file);
-            }
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
         }
+        
         facePhotoInput.addEventListener('change', () => handleImageFile(facePhotoInput, imagePreview, 'face'));
         armPhotoInput.addEventListener('change', () => handleImageFile(armPhotoInput, armImagePreview, 'arm'));
 
